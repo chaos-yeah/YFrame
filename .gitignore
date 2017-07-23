@@ -1,0 +1,6 @@
+Debug/
+obj/
+bin/
+PublishProfiles/
+*.suo
+*.user
