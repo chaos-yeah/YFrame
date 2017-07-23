@@ -1,0 +1,101 @@
+﻿<#@ template language="C#" debug="true" hostspecific="true"#>  
+<#@ include file="T4Helper/mysql.ttinclude"#>
+<#@ include file="T4Helper/ma.ttinclude"#> 
+<#
+    var manager = Manager.Create(Host, GenerationEnvironment);
+    var list = EntityHelper.GetEntities(config.ConnectionString, config.DbDatabase);
+	foreach(var t in list){
+	manager.StartNewFile(t.EntityName+".cs"); 
+#>
+using System;
+using Dos.ORM;
+
+namespace YFrame.Model
+{
+    [Serializable]
+	public partial class <#=t.EntityName#> : Entity
+    {
+
+		public <#=t.EntityName#>() : base("<#=t.EntityName#>") { }
+
+	    #region Field
+<# foreach(Field column in t.Fields){#>
+        private <#= column.Type#> _<#=column.Name#>;
+	    /// <summary>
+        /// <#= column.Comment#>
+        /// </summary>
+        public <#= column.Type#> <#=column.Name#>
+        {
+            get { return _<#=column.Name#>; }
+            set
+            {
+                this.OnPropertyValueChange(_.<#=column.Name#>, _<#=column.Name#>, value);
+                this._<#=column.Name#> = value;
+                
+            }
+        }
+<#}#>
+		#endregion
+
+		#region Method
+        /// <summary>
+        /// 获取实体中的标识列
+        /// </summary>
+        public override Field GetIdentityField()
+        {
+            return _.<#=t.Fields[0].Name#>;
+        }
+        /// <summary>
+        /// 获取实体中的主键列
+        /// </summary>
+        public override Field[] GetPrimaryKeyFields()
+        {
+            return new Field[] { _.<#=t.Fields[0].Name#> };
+        }
+		/// <summary>
+        /// 获取列信息
+        /// </summary>
+        public override Field[] GetFields()
+        {
+            return new Field[] { <#= t.DosGetFields#> };
+        }
+
+        /// <summary>
+        /// 获取值信息
+        /// </summary>
+        public override object[] GetValues()
+        {
+            return new object[] { <#= t.DosGetValues#> };
+        }
+		#endregion
+		
+		#region _
+        /// <summary>
+        /// 字段信息
+        /// </summary>
+        public class _
+        {
+            /// <summary>
+            /// *
+            /// </summary>
+            public readonly static Field All = new Field("*", "<#=t.EntityName#>");
+
+			<# foreach(Field column in t.Fields){#>/// <summary>
+            /// <#= column.Comment#>
+            /// </summary>
+            public readonly static Field <#=column.Name#> = new Field("<#=column.Name#>", "<#=t.EntityName#>", "<#=column.Comment#>");
+
+			<#}#>
+
+        }
+		#endregion
+        
+    }
+
+}
+<#
+	manager.EndBlock();  
+}
+    manager.Process(true);  
+#>
+// T4模版自动生成的文件

@@ -1,0 +1,552 @@
+﻿<#@ assembly name="System.Data.dll" #>
+<#@ assembly name="Mysql.Data.dll" #>
+<#@ assembly name="System.Data.DataSetExtensions.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Data" #>
+<#@ import namespace="System.Data.SqlClient" #>
+<#@ import namespace="MySql.Data.MySqlClient" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#+
+
+	public class config
+    {
+        public static readonly string ConnectionString = "Data Source=127.0.0.1;Database=testdb;User Id=root;Password=ye930429;Convert Zero Datetime=True;Allow Zero Datetime=True;";
+        public static readonly string DbDatabase = "testdb";
+    }
+
+	public class MysqlDbTypeMap
+	{
+		//暂时不知道怎么映射返回null, 根据自己的需要再自己改吧
+		public static string MapDefaultType(string type, string defaultValue)
+		{
+        
+			switch (type)
+			{
+				case "bigint": return string.IsNullOrEmpty(defaultValue) ? "int.MinValue" : defaultValue;
+				case "bit": return string.IsNullOrEmpty(defaultValue) ? "false" : defaultValue == "b'1'" ? "true" : "false";
+				case "char": return string.IsNullOrEmpty(defaultValue) ? "string.Empty" : string.Format("\"{0}\"", defaultValue);
+				case "date": return "DateTime.MinValue";
+				case "datetime": return "DateTime.MinValue";
+				case "datetime2": return "DateTime.MinValue";
+				case "datetimeoffset": return "DateTimeOffset.MinValue";
+				case "decimal": return string.IsNullOrEmpty(defaultValue) ? "0" : defaultValue + "m";
+				case "float": return string.IsNullOrEmpty(defaultValue) ? "double.MinValue" : defaultValue;
+				case "double": return string.IsNullOrEmpty(defaultValue) ? "double.MinValue" : defaultValue;
+				case "int": return string.IsNullOrEmpty(defaultValue) ? "int.MinValue" : defaultValue;
+				case "nchar": return string.IsNullOrEmpty(defaultValue) ? "string.Empty" : string.Format("\"{0}\"", defaultValue);
+				case "ntext": return string.IsNullOrEmpty(defaultValue) ? "string.Empty" : string.Format("\"{0}\"", defaultValue);
+				case "numeric": return "0";
+				case "nvarchar": return string.IsNullOrEmpty(defaultValue) ? "string.Empty" : string.Format("\"{0}\"", defaultValue);
+				case "real": return string.IsNullOrEmpty(defaultValue) ? "float.MinValue" : defaultValue;
+				case "smalldatetime": return "DateTime.MinValue";
+				case "smallint": return string.IsNullOrEmpty(defaultValue) ? "short.MinValue" : defaultValue;
+				case "smallmoney": return "0";
+				case "text": return string.IsNullOrEmpty(defaultValue) ? "string.Empty" : string.Format("\"{0}\"", defaultValue);
+				case "time": return string.IsNullOrEmpty(defaultValue) ? "TimeSpan.MinValue" : defaultValue;
+				case "timestamp": return "null";
+				case "tinyint": return string.IsNullOrEmpty(defaultValue) ? "byte.MinValue" : string.Format("{0}", defaultValue);
+				case "uniqueidentifier": return string.IsNullOrEmpty(defaultValue) ? "Guid.NewGuid()" : string.Format("\"{0}\"", defaultValue);
+				case "varbinary": return "null";
+				case "varchar": return string.IsNullOrEmpty(defaultValue) ? "string.Empty" : string.Format("\"{0}\"", defaultValue);
+				case "xml": return string.IsNullOrEmpty(defaultValue) ? "string.Empty" : string.Format("\"{0}\"", defaultValue);
+				default: return "null";
+			}
+
+		}
+
+		public static string MapCsharpType(string dbtype, bool isNull)
+		{
+			if (string.IsNullOrEmpty(dbtype)) return dbtype;
+			dbtype = dbtype.ToLower();
+			string csharpType = "object";
+			switch (dbtype)
+			{
+				case "bigint": csharpType = isNull ? "long?" : "long"; break;
+				case "binary": csharpType = "byte[]"; break;
+				case "bit": csharpType = isNull ? "bool?" : "bool"; break;
+				case "char": csharpType = "string"; break;
+				case "date": csharpType = isNull ? "DateTime?" : "DateTime"; break;
+				case "datetime": csharpType = isNull ? "DateTime?" : "DateTime"; break;
+				case "datetime2": csharpType = isNull ? "DateTime?" : "DateTime"; break;
+				case "datetimeoffset": csharpType = "DateTimeOffset"; break;
+				case "dityint": csharpType = isNull ? "bool?" : "bool"; break;
+				case "decimal": csharpType = "decimal"; break;
+				case "float": csharpType = isNull ? "double?" : "double"; break;
+				case "double": csharpType = isNull ? "double?" : "double"; break;
+				case "image": csharpType = "byte[]"; break;
+				case "int": csharpType = isNull ? "int?" : "int"; break;
+				case "money": csharpType = "decimal"; break;
+				case "nchar": csharpType = "string"; break;
+				case "ntext": csharpType = "string"; break;
+				case "numeric": csharpType = "decimal"; break;
+				case "nvarchar": csharpType = "string"; break;
+				case "real": csharpType = "Single"; break;
+				case "smalldatetime": csharpType = isNull ? "DateTime?" : "DateTime"; break;
+				case "smallint": csharpType = isNull ? "short?" : "short"; break;
+				case "smallmoney": csharpType = "decimal"; break;
+				case "sql_variant": csharpType = "object"; break;
+				case "sysname": csharpType = "object"; break;
+				case "text": csharpType = "string"; break;
+				case "time": csharpType = "TimeSpan"; break;
+				case "timestamp": csharpType = "byte[]"; break;
+				case "tinyint": csharpType = "int?"; break;
+				case "uniqueidentifier": csharpType = "Guid"; break;
+				case "varbinary": csharpType = "byte[]"; break;
+				case "varchar": csharpType = "string"; break;
+				case "xml": csharpType = "string"; break;
+				default: csharpType = "object"; break;
+			}
+			return csharpType;
+		}
+
+		public static Type MapCommonType(string dbtype, bool isNull)
+		{
+			if (string.IsNullOrEmpty(dbtype)) return Type.Missing.GetType();
+			dbtype = dbtype.ToLower();
+			Type commonType = typeof(object);
+			switch (dbtype)
+			{
+				case "bigint": commonType = isNull ? typeof(long?) : typeof(long); break;
+				case "binary": commonType = typeof(byte[]); break;
+				case "bit": commonType = isNull ? typeof(bool?) : typeof(bool); break;
+				case "char": commonType = typeof(string); break;
+				case "date": commonType = isNull ? typeof(DateTime?) : typeof(DateTime); break;
+				case "datetime": commonType = isNull ? typeof(DateTime?) : typeof(DateTime); break;
+				case "datetime2": commonType = isNull ? typeof(DateTime?) : typeof(DateTime); break;
+				case "datetimeoffset": commonType = typeof(DateTimeOffset); break;
+				case "dityint": commonType = isNull ? typeof(Boolean?) : typeof(Boolean); break;
+				case "decimal": commonType = typeof(decimal); break;
+				case "float": commonType = isNull ? typeof(double?) : typeof(double); break;
+				case "double": commonType = isNull ? typeof(double?) : typeof(double); break;
+				case "image": commonType = typeof(byte[]); break;
+				case "int": commonType = isNull ? typeof(int?) : typeof(int); break;
+				case "money": commonType = typeof(decimal); break;
+				case "nchar": commonType = typeof(string); break;
+				case "ntext": commonType = typeof(string); break;
+				case "numeric": commonType = typeof(decimal); break;
+				case "nvarchar": commonType = typeof(string); break;
+				case "real": commonType = isNull ? typeof(float?) : typeof(float); break;
+				case "smalldatetime": commonType = isNull ? typeof(DateTime?) : typeof(DateTime); break;
+				case "smallint": commonType = isNull ? typeof(short?) : typeof(short); break;
+				case "smallmoney": commonType = typeof(decimal); break;
+				case "sql_variant": commonType = typeof(object); break;
+				case "sysname": commonType = typeof(object); break;
+				case "text": commonType = typeof(string); break;
+				case "time": commonType = typeof(TimeSpan); break;
+				case "timestamp": commonType = typeof(byte[]); break;
+				case "tinyint": commonType = typeof(byte); break;
+				case "uniqueidentifier": commonType = typeof(Guid); break;
+				case "varbinary": commonType = typeof(byte[]); break;
+				case "varchar": commonType = typeof(string); break;
+				case "xml": commonType = typeof(string); break;
+				default: commonType = typeof(object); break;
+			}
+			return commonType;
+		}
+	}
+
+	public class DbHelper
+	{
+
+		#region GetDbTables
+		private static DataTable GetDataTable(string connectionString, string commandText, params SqlParameter[] parms)
+		{
+			using (SqlConnection connection = new SqlConnection(connectionString))
+			{
+				SqlCommand command = connection.CreateCommand();
+				command.CommandText = commandText;
+				command.Parameters.AddRange(parms);
+				SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+				DataTable dt = new DataTable();
+				adapter.Fill(dt);
+
+				return dt;
+			}
+		}
+
+		private static DataTable GetMysqlDataTable(string connectionString, string commandText, params SqlParameter[] parms)
+		{
+			using (MySqlConnection connection = new MySqlConnection(connectionString))
+			{
+				MySqlCommand command = connection.CreateCommand();
+				command.CommandText = commandText;
+				command.Parameters.AddRange(parms);
+				MySqlDataAdapter adapter = new MySqlDataAdapter(command);
+
+				DataTable dt = new DataTable();
+				adapter.Fill(dt);
+
+				return dt;
+			}
+		}
+
+		public static List<DbTable> GetMysqlDbTables(string connectionString, string database,string tables=null)
+		{
+
+			 if (!string.IsNullOrEmpty(tables))
+            {
+                tables = string.Format(" and obj.name in ('{0}')", tables.Replace(",", "','"));
+            }
+            #region SQL
+            string sql = string.Format(@"SELECT
+                                    obj.name Name,
+                                    schem.name Comment,
+                                    idx.rows,
+                                    CAST
+                                    (
+                                        CASE 
+                                            WHEN (SELECT COUNT(1) FROM sys.indexes WHERE object_id= obj.OBJECT_ID AND is_primary_key=1) >=1 THEN 1
+                                            ELSE 0
+                                        END 
+                                    AS BIT) HasPrimaryKey                                         
+                                    from {0}.sys.objects obj 
+                                    inner join {0}.dbo.sysindexes idx on obj.object_id=idx.id and idx.indid<=1
+                                    INNER JOIN {0}.sys.schemas schem ON obj.schema_id=schem.schema_id
+                                    where type='U' {1}
+                                    order by obj.name", database, tables);
+            #endregion
+
+			DataTable dt = GetMysqlDataTable(connectionString, sql);
+			return dt.Rows.Cast<DataRow>().Select(row => new DbTable
+			{
+				TableName = row.Field<string>("Name"),
+				Rows = row.Field<Int32>("rows"),
+				Comment = row.Field<string>("Comment")
+			}).ToList();
+		}
+
+		public static List<DbTable> GetDbTables(string connectionString, string database,string tables=null)
+		{
+
+			 if (!string.IsNullOrEmpty(tables))
+            {
+                tables = string.Format(" and obj.name in ('{0}')", tables.Replace(",", "','"));
+            }
+            #region SQL
+            string sql = string.Format(@"SELECT
+                                    obj.name Name,
+                                    schem.name Comment,
+                                    idx.rows,
+                                    CAST
+                                    (
+                                        CASE 
+                                            WHEN (SELECT COUNT(1) FROM sys.indexes WHERE object_id= obj.OBJECT_ID AND is_primary_key=1) >=1 THEN 1
+                                            ELSE 0
+                                        END 
+                                    AS BIT) HasPrimaryKey                                         
+                                    from {0}.sys.objects obj 
+                                    inner join {0}.dbo.sysindexes idx on obj.object_id=idx.id and idx.indid<=1
+                                    INNER JOIN {0}.sys.schemas schem ON obj.schema_id=schem.schema_id
+                                    where type='U' {1}
+                                    order by obj.name", database, tables);
+            #endregion
+
+			DataTable dt = GetDataTable(connectionString, sql);
+			return dt.Rows.Cast<DataRow>().Select(row => new DbTable
+			{
+				TableName = row.Field<string>("Name"),
+				Rows = row.Field<Int32>("rows"),
+				Comment = row.Field<string>("Comment")
+			}).ToList();
+		}
+		#endregion
+
+		#region GetDbColumns
+
+		public static List<DbColumn> GetDbColumns(string connectionString, string database, string tableName,string schema = "dbo")
+		{
+			 #region SQL
+            string sql = string.Format(@"
+                                    WITH indexCTE AS
+                                    (
+                                        SELECT 
+                                        ic.column_id,
+                                        ic.index_column_id,
+                                        ic.object_id    
+                                        FROM {0}.sys.indexes idx
+                                        INNER JOIN {0}.sys.index_columns ic ON idx.index_id = ic.index_id AND idx.object_id = ic.object_id
+                                        WHERE  idx.object_id =OBJECT_ID(@tableName) AND idx.is_primary_key=1
+                                    )
+                                    select
+                                    colm.column_id ColumnID,
+                                    CAST(CASE WHEN indexCTE.column_id IS NULL THEN 0 ELSE 1 END AS BIT) isPrimaryKey,
+                                    colm.name Field,
+                                    systype.name Type,
+                                    colm.is_identity IsIdentity,
+                                    colm.is_nullable IsNullable,
+                                    cast(colm.max_length as int) ByteLength,
+                                    (
+                                        case 
+                                            when systype.name='nvarchar' and colm.max_length>0 then colm.max_length/2 
+                                            when systype.name='nchar' and colm.max_length>0 then colm.max_length/2
+                                            when systype.name='ntext' and colm.max_length>0 then colm.max_length/2 
+                                            else colm.max_length
+                                        end
+                                    ) CharLength,
+                                    cast(colm.precision as int) Precision,
+                                    cast(colm.scale as int) Scale,
+                                    prop.value Comment,
+									m.text DF
+                                    from {0}.sys.columns colm
+                                    inner join {0}.sys.types systype on colm.system_type_id=systype.system_type_id and colm.user_type_id=systype.user_type_id
+                                    left join {0}.sys.extended_properties prop on colm.object_id=prop.major_id and colm.column_id=prop.minor_id
+                                    LEFT JOIN indexCTE ON colm.column_id=indexCTE.column_id AND colm.object_id=indexCTE.object_id 
+                                    left join {0}.sys.syscomments m on colm.default_object_id=m.id                                     
+                                    where colm.object_id=OBJECT_ID(@tableName)
+                                    order by colm.column_id", database);
+            #endregion
+            SqlParameter param = new SqlParameter("@tableName",string.Format("{0}.{1}.{2}", database, schema, tableName));
+
+
+			DataTable dt = GetDataTable(connectionString, sql,param);
+			return dt.Rows.Cast<DataRow>().Select(row => new DbColumn
+			{
+				IsPrimaryKey = !String.IsNullOrEmpty(row.Field<string>("isPrimaryKey")),
+				Field = row.Field<string>("Field"),
+				Type = row.Field<string>("Type"),
+				Comment = row.Field<string>("Comment"),
+				IsNullable = row.Field<int>("IsNullable")==1,
+				Default = row.Field<string>("DF")
+			}).ToList();
+		}
+
+		public static List<DbColumn> GetDbColumns(string connectionString, string database, DbTable table,string schema = "dbo")
+		{
+			 #region SQL
+            string sql = string.Format(@"
+                                    WITH indexCTE AS
+                                    (
+                                        SELECT 
+                                        ic.column_id,
+                                        ic.index_column_id,
+                                        ic.object_id    
+                                        FROM {0}.sys.indexes idx
+                                        INNER JOIN {0}.sys.index_columns ic ON idx.index_id = ic.index_id AND idx.object_id = ic.object_id
+                                        WHERE  idx.object_id =OBJECT_ID(@tableName) AND idx.is_primary_key=1
+                                    )
+                                    select
+                                    colm.column_id ColumnID,
+                                    CAST(CASE WHEN indexCTE.column_id IS NULL THEN 0 ELSE 1 END AS BIT) isPrimaryKey,
+                                    colm.name colmfield,
+                                    systype.name colmtype,
+                                    colm.is_identity IsIdentity,
+                                    colm.is_nullable IsNullable,
+                                    cast(colm.max_length as int) ByteLength,
+                                    (
+                                        case 
+                                            when systype.name='nvarchar' and colm.max_length>0 then colm.max_length/2 
+                                            when systype.name='nchar' and colm.max_length>0 then colm.max_length/2
+                                            when systype.name='ntext' and colm.max_length>0 then colm.max_length/2 
+                                            else colm.max_length
+                                        end
+                                    ) CharLength,
+                                    cast(colm.precision as int) Precision,
+                                    cast(colm.scale as int) Scale,
+									CAST(CASE WHEN prop.value IS NULL THEN '' ELSE prop.value END as varchar(50) ) Comment,
+				                    CAST(CASE WHEN m.text IS NULL THEN '' ELSE m.text END as varchar(50) ) DF
+									 
+                                    from {0}.sys.columns colm
+                                    inner join {0}.sys.types systype on colm.system_type_id=systype.system_type_id and colm.user_type_id=systype.user_type_id
+                                    left join {0}.sys.extended_properties prop on colm.object_id=prop.major_id and colm.column_id=prop.minor_id
+                                    LEFT JOIN indexCTE ON colm.column_id=indexCTE.column_id AND colm.object_id=indexCTE.object_id  
+                                    left join {0}.sys.syscomments m on colm.default_object_id=m.id                                       
+                                    where colm.object_id=OBJECT_ID(@tableName)
+                                    order by colm.column_id", database);
+            #endregion
+            SqlParameter param = new SqlParameter("@tableName",string.Format("{0}.{1}.{2}", database, schema, table.TableName));
+
+
+			table.PrimaryKey = new List<string>();
+			DataTable dt = GetDataTable(connectionString, sql,param);
+			var list = dt.Rows.Cast<DataRow>().Select(row => new DbColumn
+			{ 
+				IsPrimaryKey = row.Field<bool>("isPrimaryKey"),
+                IsIdentity = row.Field<bool>("IsIdentity"),
+                Field = row.Field<string>("colmfield"),
+                Type = row.Field<string>("colmtype"),
+                Comment = row.Field<string>("Comment"),
+                IsNullable = row.Field<bool>("IsNullable"),
+                Default = row.Field<string>("DF")
+			}).ToList();
+			foreach (var column in list)
+			{
+				if (column.IsPrimaryKey)
+				{
+					table.PrimaryKey.Add(column.Field);
+				}
+				if (column.IsIdentity)
+				{
+					table.Identity = column.Field;
+				}
+			}
+			return list;
+		}
+
+		#endregion
+
+
+	}
+
+	public sealed class DbTable
+	{
+		/// <summary>
+		/// 主键
+		/// </summary>
+		public List<string> PrimaryKey { get; set; }
+
+		/// <summary>
+		/// Dos.Orm使用
+		/// </summary>
+		public string PrimaryKeyString
+		{
+			get
+			{
+				StringBuilder sb = new StringBuilder();
+				foreach (var item in PrimaryKey)
+				{
+					sb.AppendFormat("_.{0},", item);
+				}
+				return sb.ToString().Trim(',');
+			}
+
+		}
+		/// <summary>
+		/// 标识字段
+		/// </summary>
+		public string Identity { get; set; }
+
+		/// <summary>
+		/// 表名称
+		/// </summary>
+		public string TableName { get; set; }
+
+		/// <summary>
+		/// 类名
+		/// </summary>
+		public string ClassName { get { return TableName; } }
+		/// <summary>
+		/// 行数
+		/// </summary>
+		public Int32 Rows { get; set; }
+
+		/// <summary>
+		/// 描述信息
+		/// </summary>
+		public string Comment { get; set; }
+
+		/// <summary>
+		/// 行信息
+		/// </summary>
+		public List<DbColumn> ColumnList { get; set; }
+
+		/// <summary>
+		/// Dos.Orm 使用
+		/// </summary>
+		public string DosGetFields
+		{
+			get
+			{
+				StringBuilder sb = new StringBuilder();
+				foreach (var item in this.ColumnList)
+				{
+					sb.AppendFormat("_.{0},", item.Field);
+				}
+				return sb.ToString().TrimEnd(',');
+			}
+		}
+
+		/// <summary>
+		/// Dos.Orm使用
+		/// </summary>
+		public string DosGetValues
+		{
+			get
+			{
+				StringBuilder sb = new StringBuilder();
+				foreach (var item in this.ColumnList)
+				{
+					sb.AppendFormat("this._{0},", item.Field);
+				}
+				return sb.ToString().TrimEnd(',');
+			}
+		}
+	}
+
+	public sealed class DbColumn
+	{
+		/// <summary>
+		/// 默认值
+		/// </summary>
+		public string Default { get; set; }
+		/// <summary>
+		/// 默认值
+		/// </summary>
+		public string DefaultString
+		{
+			get { return MysqlDbTypeMap.MapDefaultType(ColumnType, Default); }
+		}
+		/// <summary>
+		/// 是否主键
+		/// </summary>
+		public bool IsPrimaryKey { get; set; }
+		/// <summary>
+		/// 是否标识
+		/// </summary>
+		public bool IsIdentity { get; set; }
+		/// <summary>
+		/// 字段名称
+		/// </summary>
+		public string Field { get; set; }
+		/// <summary>
+		/// 字段类型 int(11)
+		/// </summary>
+		public string Type { get; set; }
+		/// <summary>
+		/// 字段类型int
+		/// </summary>
+		public string ColumnType
+		{
+			get
+			{
+				return Type.IndexOf('(') == -1 ? Type : Type.Substring(0, Type.IndexOf('('));
+			}
+		}
+		/// <summary>
+		/// 数据库类型对应的C#类型
+		/// </summary>
+		public string CSharpType
+		{
+			get
+			{
+				return MysqlDbTypeMap.MapCsharpType(ColumnType, this.IsNullable);
+			}
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		public Type CommonType
+		{
+			get
+			{
+				return MysqlDbTypeMap.MapCommonType(ColumnType, this.IsNullable);
+			}
+		}
+		/// <summary>
+		/// 描述
+		/// </summary>
+		public string Comment { get; set; }
+		/// <summary>
+		/// 是否允许空
+		/// </summary>
+		public bool IsNullable { get; set; }
+
+	}
+
+
+#>

@@ -1,0 +1,14 @@
+E:\ZT.Program\YFrame\YFrame.Tools.Common\bin\Debug\YFrame.Tools.Common.dll
+E:\ZT.Program\YFrame\YFrame.Tools.Common\bin\Debug\YFrame.Tools.Common.pdb
+E:\ZT.Program\YFrame\YFrame.Tools.Common\obj\Debug\YFrame.Tools.Common.dll
+E:\ZT.Program\YFrame\YFrame.Tools.Common\obj\Debug\YFrame.Tools.Common.pdb
+E:\ZT.Program\YFrame\YFrame.Tools.Common\bin\Debug\Newtonsoft.Json.dll
+E:\ZT.Program\YFrame\YFrame.Tools.Common\bin\Debug\Newtonsoft.Json.xml
+E:\ZT.Program\YFrame\YFrame.Tools.Common\obj\Debug\YFrame.Tools.Common.csprojResolveAssemblyReference.cache
+F:\Code\YFrame\YFrame.Tools.Common\bin\Debug\YFrame.Tools.Common.dll
+F:\Code\YFrame\YFrame.Tools.Common\bin\Debug\YFrame.Tools.Common.pdb
+F:\Code\YFrame\YFrame.Tools.Common\bin\Debug\Newtonsoft.Json.dll
+F:\Code\YFrame\YFrame.Tools.Common\bin\Debug\Newtonsoft.Json.xml
+F:\Code\YFrame\YFrame.Tools.Common\obj\Debug\YFrame.Tools.Common.csprojResolveAssemblyReference.cache
+F:\Code\YFrame\YFrame.Tools.Common\obj\Debug\YFrame.Tools.Common.dll
+F:\Code\YFrame\YFrame.Tools.Common\obj\Debug\YFrame.Tools.Common.pdb

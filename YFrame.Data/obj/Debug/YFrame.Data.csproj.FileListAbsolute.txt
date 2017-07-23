@@ -1,0 +1,16 @@
+E:\ZT.Program\YFrame\YFrame.Data\bin\Debug\YFrame.Data.dll
+E:\ZT.Program\YFrame\YFrame.Data\bin\Debug\YFrame.Data.pdb
+E:\ZT.Program\YFrame\YFrame.Data\bin\Debug\Dos.ORM.dll
+E:\ZT.Program\YFrame\YFrame.Data\bin\Debug\YFrame.Model.dll
+E:\ZT.Program\YFrame\YFrame.Data\bin\Debug\YFrame.Model.pdb
+E:\ZT.Program\YFrame\YFrame.Data\obj\Debug\YFrame.Data.csprojResolveAssemblyReference.cache
+E:\ZT.Program\YFrame\YFrame.Data\obj\Debug\YFrame.Data.dll
+E:\ZT.Program\YFrame\YFrame.Data\obj\Debug\YFrame.Data.pdb
+F:\Code\YFrame\YFrame.Data\bin\Debug\YFrame.Data.dll
+F:\Code\YFrame\YFrame.Data\bin\Debug\YFrame.Data.pdb
+F:\Code\YFrame\YFrame.Data\bin\Debug\Dos.ORM.dll
+F:\Code\YFrame\YFrame.Data\bin\Debug\YFrame.Model.dll
+F:\Code\YFrame\YFrame.Data\bin\Debug\YFrame.Model.pdb
+F:\Code\YFrame\YFrame.Data\obj\Debug\YFrame.Data.csprojResolveAssemblyReference.cache
+F:\Code\YFrame\YFrame.Data\obj\Debug\YFrame.Data.dll
+F:\Code\YFrame\YFrame.Data\obj\Debug\YFrame.Data.pdb

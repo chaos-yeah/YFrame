@@ -1,0 +1,11 @@
+E:\ZT.Program\YFrame\YFrame.Model\bin\Debug\YFrame.Model.dll
+E:\ZT.Program\YFrame\YFrame.Model\bin\Debug\YFrame.Model.pdb
+E:\ZT.Program\YFrame\YFrame.Model\bin\Debug\Dos.ORM.dll
+E:\ZT.Program\YFrame\YFrame.Model\obj\Debug\YFrame.Model.dll
+E:\ZT.Program\YFrame\YFrame.Model\obj\Debug\YFrame.Model.pdb
+E:\ZT.Program\YFrame\YFrame.Model\obj\Debug\YFrame.Model.csprojResolveAssemblyReference.cache
+F:\Code\YFrame\YFrame.Model\bin\Debug\YFrame.Model.dll
+F:\Code\YFrame\YFrame.Model\bin\Debug\YFrame.Model.pdb
+F:\Code\YFrame\YFrame.Model\bin\Debug\Dos.ORM.dll
+F:\Code\YFrame\YFrame.Model\obj\Debug\YFrame.Model.dll
+F:\Code\YFrame\YFrame.Model\obj\Debug\YFrame.Model.pdb

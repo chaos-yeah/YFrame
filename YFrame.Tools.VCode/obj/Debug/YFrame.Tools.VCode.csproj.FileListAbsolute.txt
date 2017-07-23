@@ -1,0 +1,8 @@
+E:\ZT.Program\YFrame\YFrame.Tools.VCode\bin\Debug\YFrame.Tools.VCode.dll
+E:\ZT.Program\YFrame\YFrame.Tools.VCode\bin\Debug\YFrame.Tools.VCode.pdb
+E:\ZT.Program\YFrame\YFrame.Tools.VCode\obj\Debug\YFrame.Tools.VCode.dll
+E:\ZT.Program\YFrame\YFrame.Tools.VCode\obj\Debug\YFrame.Tools.VCode.pdb
+F:\Code\YFrame\YFrame.Tools.VCode\bin\Debug\YFrame.Tools.VCode.dll
+F:\Code\YFrame\YFrame.Tools.VCode\bin\Debug\YFrame.Tools.VCode.pdb
+F:\Code\YFrame\YFrame.Tools.VCode\obj\Debug\YFrame.Tools.VCode.dll
+F:\Code\YFrame\YFrame.Tools.VCode\obj\Debug\YFrame.Tools.VCode.pdb

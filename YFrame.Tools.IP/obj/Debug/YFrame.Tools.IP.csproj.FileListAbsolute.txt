@@ -1,0 +1,10 @@
+E:\ZT.Program\YFrame\YFrame.Tools.IP\bin\Debug\YFrame.Tools.IP.dll
+E:\ZT.Program\YFrame\YFrame.Tools.IP\bin\Debug\YFrame.Tools.IP.pdb
+E:\ZT.Program\YFrame\YFrame.Tools.IP\obj\Debug\YFrame.Tools.IP.dll
+E:\ZT.Program\YFrame\YFrame.Tools.IP\obj\Debug\YFrame.Tools.IP.pdb
+E:\ZT.Program\YFrame\YFrame.Tools.IP\obj\Debug\YFrame.Tools.IP.csprojResolveAssemblyReference.cache
+F:\Code\YFrame\YFrame.Tools.IP\bin\Debug\YFrame.Tools.IP.dll
+F:\Code\YFrame\YFrame.Tools.IP\bin\Debug\YFrame.Tools.IP.pdb
+F:\Code\YFrame\YFrame.Tools.IP\obj\Debug\YFrame.Tools.IP.dll
+F:\Code\YFrame\YFrame.Tools.IP\obj\Debug\YFrame.Tools.IP.pdb
+F:\Code\YFrame\YFrame.Tools.IP\obj\Debug\YFrame.Tools.IP.csprojResolveAssemblyReference.cache
