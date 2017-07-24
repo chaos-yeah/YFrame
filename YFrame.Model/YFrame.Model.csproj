@@ -64,7 +64,7 @@
     <None Include="T4Helper\mysql.ttinclude" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="T4Helper\hp.ttinclude" />
+    <None Include="T4Helper\mssql.ttinclude" />
     <None Include="T4Helper\ma.ttinclude" />
   </ItemGroup>
   <ItemGroup>
