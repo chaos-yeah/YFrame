@@ -8,7 +8,7 @@ using YFrame.Model;
 
 namespace YFrame.Data
 {
-    public class PersonData : BaseData<Person>
+    public class StudentData : BaseData<Student>
     {
 		
     }

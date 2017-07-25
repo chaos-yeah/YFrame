@@ -1,0 +1,32 @@
+﻿<#@ template language="C#" debug="true" hostspecific="true"#>  
+<#@ include file="../T4Helper/mysql.ttinclude"#>
+<#@ include file="../T4Helper/ma.ttinclude"#> 
+<#
+    var manager = Manager.Create(Host, GenerationEnvironment);
+    var list = EntityHelper.GetEntities(config.ConnectionString, config.DbDatabase);
+	foreach(var t in list){
+	manager.StartNewFile(t.EntityName+"Logic.cs"); 
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using YFrame.Data;
+using YFrame.Logic.Base;
+using YFrame.Model;
+
+namespace YFrame.Logic
+{
+    public class <#=t.EntityName#>Logic : BaseLogic<<#=t.EntityName#>Data>
+    {
+
+    }
+}
+
+<#
+	manager.EndBlock();  
+}
+    manager.Process(true);  
+#>
+// T4模版自动生成的文件

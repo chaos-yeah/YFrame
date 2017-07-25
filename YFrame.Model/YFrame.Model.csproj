@@ -43,29 +43,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Db.cs">
+    <Compile Include="Model.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Db.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Person.cs">
-      <DependentUpon>Db.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Student.cs">
-      <DependentUpon>Db.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Db.tt">
+    <Content Include="Model.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Db.cs</LastGenOutput>
+      <LastGenOutput>Model.cs</LastGenOutput>
     </Content>
-    <None Include="T4Helper\mysql.ttinclude" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="T4Helper\mssql.ttinclude" />
-    <None Include="T4Helper\ma.ttinclude" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
